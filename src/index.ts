@@ -19,7 +19,6 @@ export interface IBucket<TKey, T> {
     del(key: TKey, callback?: (error: Error) => any): void;
     del(key: TKey, options?: { keyEncoding?: string; sync?: boolean }, callback?: (error: Error) => any): void;
 
-
     batch(array: Batch[], options?: { keyEncoding?: string; valueEncoding?: string; sync?: boolean }, callback?: (error?: Error) => any): void;
     batch(array: Batch[], callback?: (error?: Error) => any): void;
     batch(): LevelUpChain;
@@ -33,15 +32,16 @@ export interface IBucket<TKey, T> {
     repair(location: string, callback?: Function): void;
 }
 
-export class Bucket<TKey, T> implements IBucket<TKey, T> {
+/**Can't extend SubLevel is not a 'class'*/
+export class Bucket<TKey, TValue> implements IBucket<TKey, TValue> {
 
-    async: Azync<TKey, T>;
+    async: Azync<TKey, TValue>;
 
     level: Sublevel;
 
     constructor(
         prefix: string,
-        private key: (x: T) => string,
+        private key: (x: TValue) => string,
         db: Sublevel) {
         //...    
         this.level = db.sublevel(prefix);
@@ -50,7 +50,7 @@ export class Bucket<TKey, T> implements IBucket<TKey, T> {
 
         this.async = {
 
-            get(key: TKey): Promise<T> {
+            get(key: TKey): Promise<TValue> {
                 return new Promise((resolve, reject) => {
                     bucket.level.get(key, (e, data) => {
                         if (e) {
@@ -62,16 +62,19 @@ export class Bucket<TKey, T> implements IBucket<TKey, T> {
                 })
             },
 
-            put: (value: T): Promise<Bucket<TKey, T>> => {
+            put: (value: TValue): Promise<Bucket<TKey, TValue>> => {
                 return new Promise((rs, rj) => {
                     bucket.level.put(bucket.key(value), value, (e) => {
-                        if (e) { rj(e); return; }
+                        if (e) { 
+                            rj(e);
+                             return; 
+                        }
                         rs(bucket);
                     })
                 })
             },
 
-            del: (value: T): Promise<Bucket<TKey, T>> => {
+            del: (value: TValue): Promise<Bucket<TKey, TValue>> => {
                 return new Promise((resolve, reject) => {
                     bucket.level.del(bucket.key(value), e => {
                         if (e) {
@@ -84,7 +87,7 @@ export class Bucket<TKey, T> implements IBucket<TKey, T> {
             }
         }
 
-        //LevelUp
+        //LevelUp: 
         this.open = this.level.open;
         this.close = this.level.close;
         this.put = this.level.put as any;
@@ -102,7 +105,7 @@ export class Bucket<TKey, T> implements IBucket<TKey, T> {
 
         //Sublevel
         this.sublevel = this.level.sublevel;
-        this.pre = this.level.pre;
+        this.pre = this.level.pre;        
     }
 
     //LevelUp
@@ -126,3 +129,5 @@ export class Bucket<TKey, T> implements IBucket<TKey, T> {
     pre: (hook: Hook) => Function;
 
 }
+
+export type Result<T> ={ error?:Error, value?:T};

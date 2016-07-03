@@ -8,46 +8,45 @@ import {Data, User} from './data';
 
 describe('what', () => {
 
-    it('works', async () => {
+    it('delete', async ()=>{
+        const data = new Data(/*Memdown*/);
+        const users = data.users.async;
+        let admin = await users.get('admin').catch(e=> null);        
+        assert.isNull(admin);
+        await users.put({ name: 'admin'});
+        admin = await users.get('admin').catch(e=> null);
+        await data.users.async.del(admin);
+        admin = await users.get('admin').catch(e=> null);
+        assert.isNull(admin);
+    })
 
-        const data = new Data(path.join(process.cwd(), 'db'));
+    it('has Keys', async () => {
 
-        let admin: User;
-
-        try {
-            admin = await data.users.async.get('admin');
-        } catch (error) {
-            console.log(error.message);
-        }
-
-        if (!admin) {
-            console.log(`admin is not there`);
-            await data.users.async.put({ name: 'admin' });
-        } else {
-            await data.users.async.del(admin);
-            console.log('deleted');
-            await data.users.async.put({ name: 'admin' });
-            console.log('added');
-        }
-
-        console.log(admin);
-
-        assert.deepEqual(admin, { name: 'admin' });
-
-        data.users.put('bob', { name: 'bob', email: 'bob@mail', password: 'bob', roles: ['user'] });
-        data.users.put('guest', { name: 'guest' });
+        const data = new Data(/*Memdown*/);                
+        await data.users.async.put({name:'admin'});                        
+        await data.users.put('bob', { name: 'bob'});
+        await data.users.put('guest', { name: 'guest' });
+        
+        let closed = false;
+        let end = false;        
+        let keys = [];
 
         data.users.createKeyStream()
-            .on('data', data => {
-                console.log(`key:${data}`);;
+            .on('data', key => {
+                keys.push(key);
             })
-            .on('close', ()=>{
-                console.log('close');
+            .on('close', () => {
+                closed = true;
             })
-            .on('end', ()=>{
-                console.log('end');
+            .on('end', () => {
+                end = true;
             });
+
+        await wait(250);
+
+        assert.isTrue(closed);
+        assert.isTrue(end);
+        assert.deepEqual(keys, ['admin', 'bob', 'guest']);
     })
 })
-
-
+const wait = (n)=> new Promise(r=> setTimeout(r, n));

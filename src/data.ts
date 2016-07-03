@@ -14,7 +14,8 @@ export class Data {
 
         this._db = Sublevel(LevelUp(dbPath || './', {
             db: dbPath ? leveldown : require('memdown'),
-            valueEncoding: 'json'
+            valueEncoding: 'json',
+            //errorIfExists: false
         }));
 
         this.users = new Bucket<string,User>('user', u => u.name, this._db);
