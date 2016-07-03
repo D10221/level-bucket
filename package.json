@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "LevelUp typescript typed 'level-sublevel' Bucket",
   "main": "built/index.js",
+  "typings": "built/index.d.ts",
   "scripts": {
     "test": "npm run build && npm run build && mocha built/tests.js",
     "build": "tsc -p .",
