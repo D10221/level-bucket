@@ -1,0 +1,25 @@
+LevelUp'+'level-sublevel', typescript typed 'Bucket?' 
+
+Note:
+    after 'typings install' 
+
+    
+//Patch d.ts    
+declare module "level-sublevel" {
+    //NEW*
+	namespace sublevel{}
+
+	function sublevel(levelup: LevelUp): Sublevel;
+	export = sublevel;		
+}   
+
+
+//Patch d.ts
+declare module "levelup" {
+    //New*
+    namespace levelup{}
+
+    function levelup(hostname: string, options?: levelupOptions): LevelUp;
+    
+    export = levelup;
+}

@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "chai": "registry:npm/chai#3.5.0+20160415060238",
+    "debug": "registry:npm/debug#2.0.0+20160511151334",
+    "methods": "registry:npm/methods#1.0.0+20160211003958"
+  },
+  "globalDependencies": {
+    "koa": "registry:dt/koa#2.0.0+20160619030120",
+    "level-sublevel": "registry:dt/level-sublevel#0.0.0+20160316155526",
+    "levelup": "registry:dt/levelup#0.0.0+20160316155526",
+    "mocha": "registry:env/mocha#2.2.5+20160321223601",
+    "node": "registry:env/node#6.0.0+20160622202520",
+    "shelljs": "registry:dt/shelljs#0.0.0+20160526131156",
+    "superagent": "registry:dt/superagent#1.4.0+20160317120654",
+    "supertest": "registry:dt/supertest#1.1.0+20160317120654"
+  }
+}
